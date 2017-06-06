@@ -1,0 +1,43 @@
+<html ng-app="Todo List">
+        <head>
+<link rel="stylesheet" href="animate.css">
+<link rel="stylesheet" href="bootstrap.css">
+<link rel="stylesheet" href="flow.css">
+<script src="angular.js"></script>
+<script src="app.js"></script>
+<style>
+.done
+        {
+                text-decoration:line-through;
+        }
+        </style> 
+        </head>
+        <body>
+               
+        <aa align="center"> <h1 class="animated  infinite bounce">TODO LIST<h1>
+                <div ng-controller="TodoList as todo">
+
+          <p>  Tasks Status= {{todo.completed}}/{{todo.tasks.length}}</p>
+         <br>       
+                <input type="text"  placeholder="Enter your Task" ng-model="todo.name">
+               <button  ng-if="!todo.updated" class="btn btn-primary" ng-click="todo.name && todo.add(todo.name)">Add Task</button>
+               <button  ng-if="todo.updated" class="btn btn-warning" ng-click="todo.update(todo.name)">Update Task</button>
+               <div ng-repeat="task in todo.tasks" >
+                       <div class="row">
+                               <div class="col-xs-3">
+                       <button class="btn btn-danger" ng-click="todo.moveup($index)">Move Up</button>
+                       <button class="btn btn-danger" ng-click="todo.movedown($index)">Move Down</button>
+                       </div>
+                   <div class="col-xs-6">
+<span ng-class="{'done':task.status}">{{task.TName}} 
+        </div>
+           <div class="col-xs-3">     </span> <button class="btn btn-danger" ng-click="todo.remove($index)">Delete</button>                    
+   <button class="btn" ng-class="{'btn-success':!task.status,'btn-warning':task.status}" ng-click="todo.call($index)">{{task.status?'Undo':'Done'}}</button>
+       <button class="btn btn-info" ng-click="todo.edit($index)">Edit</button>     
+       </div>
+
+</div>                </div>
+               </div>
+                
+
+        
