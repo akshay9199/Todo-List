@@ -1,6 +1,6 @@
-angular.module("Todo List",[])
+angular.module("Todo List",["firebase"])
 .controller("TodoList",func);
-function func()
+function func( $firebaseArray,$firebaseObject)
 {
   var todo=this;
   todo.tasks=[];
@@ -9,29 +9,48 @@ function func()
   var updateindex;
   todo.updated=0;
   todo.update=update;
-  todo.completed=0;
+ 
   todo.call=call;
   todo.remove=remove;
   todo.moveup=moveup;
   todo.movedown=movedown;
-  todo.status=status;
+ 
+
+var rootref=firebase.database().ref();
+var childref=rootref.child("Todo Tasks");
+
+
+todo.tasks=$firebaseArray(childref);
   function add(t)
   {
 
-  todo.tasks.push({"TName":t, "Status":0});
+  todo.tasks.$add({"TName":t,"Status":0});
+ 
   todo.name="";
   
   }
 function remove(s)
 {
-  todo.tasks.splice(s,1);
-  console.log(todo.tasks);
+  var i=todo.tasks[s];
+  console.log(i);
+  todo.tasks.$remove(i).then(function(childref)
+  {
+    childref.key==i.$id;
+  });
+ 
 }
 function call(index)
 {
 
 todo.tasks[index].status=todo.tasks[index].status?0:1;
-todo.tasks[index].status? todo.completed++:todo.completed-- ;
+
+
+todo.tasks.$save(index).then(function() {
+childref.key==todo.tasks[index].$id;
+});
+
+
+
 }  
 function edit(aa)
 {
@@ -39,7 +58,6 @@ todo.name= todo.tasks[aa].TName;
 
 todo.updated=1;
 updateindex=aa;
- console.log(updateindex);
 }
 function moveup(index)
 {
@@ -48,28 +66,51 @@ if(index!=0)
 {
   temp=todo.tasks[index];
   todo.tasks[index]=todo.tasks[index-1];
+  todo.tasks.$save(index).then(function (childref)
+  {
+    childref.key==todo.tasks[index].$id;
+  });
   todo.tasks[index-1]=temp;
-  console.log(temp);
+   todo.tasks.$save(index-1).then(function (childref)
+  {
+    childref.key==todo.tasks[index-1].$id;
+  });
+ 
 }
 }
 function movedown(index)
 {
-var temp={};;
+var temp={};
 if(index!=todo.tasks.length-1)
 {
   temp=todo.tasks[index];
   todo.tasks[index]=todo.tasks[index+1];
+   todo.tasks.$save(index).then(function (childref)
+  {
+    childref.key==todo.tasks[index].$id;
+  });
   todo.tasks[index+1]=temp;
+ todo.tasks.$save(index+1).then(function (childref)
+  {
+    childref.key==todo.tasks[index+1].$id;
+  });
 }
 }
 
 function update(name)
 {
+
   var index=updateindex;
-  console.log(index);
+ 
   todo.name=name;
   todo.tasks[index].TName=todo.name;
+  todo.tasks.$save(index).then(function (childref)
+  {
+    childref.key==todo.tasks[index].$id;
+  });
   todo.updated=0;
+
   todo.name=""
 }
+
 }
